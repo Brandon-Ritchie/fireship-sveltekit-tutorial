@@ -5,6 +5,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import type { User } from 'firebase/auth';
 import { getStorage } from 'firebase/storage';
 import { writable } from 'svelte/store';
+import type { Readable } from 'svelte/store';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -25,7 +26,7 @@ export const storage = getStorage(app);
 /*
  * @returns a story with the current firebase user
  */
-function userStore() {
+function userStore(): Readable<User | null> {
 	let unsubscribe: () => void;
 
 	if (!auth || !globalThis.window) {
@@ -36,7 +37,7 @@ function userStore() {
 		};
 	}
 
-	const { subscribe } = writable(auth?.currentUser ?? null, (set) => {
+	const { subscribe } = writable<User | null>(auth?.currentUser ?? null, (set) => {
 		unsubscribe = onAuthStateChanged(auth, (user) => {
 			set(user);
 		});
