@@ -4,7 +4,22 @@
 
 	async function signInWithGoogle() {
 		const provider = new GoogleAuthProvider();
-		await signInWithPopup(auth, provider);
+		const credential = await signInWithPopup(auth, provider);
+
+		const idToken = await credential.user.getIdToken();
+
+		const res = await fetch('/api/signin', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ idToken })
+		});
+	}
+
+	async function signOutSSR() {
+		const res = await fetch('/api/signin', { method: 'DELETE' });
+		await signOut(auth);
 	}
 </script>
 
